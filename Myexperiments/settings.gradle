@@ -1,0 +1,2 @@
+include ':app', ':toasts', ':snackbars'
+rootProject.name='My experiments'

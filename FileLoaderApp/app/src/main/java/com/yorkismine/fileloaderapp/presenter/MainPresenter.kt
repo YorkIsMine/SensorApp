@@ -2,78 +2,27 @@ package com.yorkismine.fileloaderapp.presenter
 
 import android.os.Looper
 import android.util.Log
+import com.yorkismine.fileloaderapp.DownloadFileUseCase
+import com.yorkismine.fileloaderapp.DownloadFileUseCaseImpl
 import com.yorkismine.fileloaderapp.model.DownloadedItem
 import com.yorkismine.fileloaderapp.utils.NetworkHelper
 import com.yorkismine.fileloaderapp.contracts.MainContract
 import com.yorkismine.fileloaderapp.contracts.MainContract.Presenter
 import com.yorkismine.fileloaderapp.view.HistoryActivity
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Function
-import io.reactivex.schedulers.Schedulers
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.ArrayList
 
 class MainPresenter(private val view: MainContract.View) : Presenter {
-    val list: ArrayList<DownloadedItem> = ArrayList()
+    private var list: ArrayList<DownloadedItem> = ArrayList()
 
     override fun downloadFile(url: String, dir: String) {
-        var length: Long = 0
-
-        val l: Long = 1
         view.isHistoryButtonClickable(false)
-        Observable.just(l)
-            .observeOn(Schedulers.io())
-            .map(object : Function<Long, Long> {
-                override fun apply(t: Long): Long {
-                    var n = t
-                    n = NetworkHelper.downloadAndGetSizeOfFile(url, dir)
-                    Log.d("YYYY", "n is $n")
 
-                    return n
-                }
+        val df: DownloadFileUseCase = DownloadFileUseCaseImpl()
+        list = df.downloadFile(url, dir) as ArrayList<DownloadedItem>
 
-            })
-            .subscribeOn(AndroidSchedulers.mainThread())
-            .subscribe(object : Observer<Long> {
-                override fun onComplete() {
-                }
-
-                override fun onSubscribe(d: Disposable) {
-
-                }
-
-                override fun onNext(t: Long) {
-                    Log.d("YYYY", t.toString())
-                    length = t
-                    Log.d("YYYY", "done!")
-                    Looper.prepare()
-                    view.showResult()
-                    val site = url.subSequence(0, (url.indexOf("/", 10)) + 1) as String
-                    Log.d("YYYY", site)
-                    val s = SimpleDateFormat("dd MMM YYYY", Locale.ENGLISH)
-                    val d = Date()
-
-                    val item = DownloadedItem(
-                        s.format(d), site, length / 1024 / 1024
-                    )
-                    list.add(item)
-                    view.isHistoryButtonClickable(true)
-                    Looper.loop()
-                }
-
-                override fun onError(e: Throwable) {
-                    e.printStackTrace()
-                    Looper.prepare()
-                    view.showError()
-                    view.isHistoryButtonClickable(true)
-                    Looper.loop()
-                }
-
-            })
+        view.isHistoryButtonClickable(true)
+        if (list.size <= 0) view.showError()
+        else view.showResult()
     }
 
     override fun uploadFiles() {

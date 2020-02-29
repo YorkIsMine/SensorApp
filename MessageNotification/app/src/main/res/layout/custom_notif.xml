@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="70dp">
+
+    <TextView
+        android:id="@+id/timer"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        tools:text="Timer"
+        android:textAlignment="center"
+        android:text="Timer"
+        style="@style/TextAppearance.Compat.Notification.Info"/>
+
+</LinearLayout>

@@ -1,0 +1,2 @@
+include ':app', ':navigationtest'
+rootProject.name='Google-lessons'
